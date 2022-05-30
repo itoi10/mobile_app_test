@@ -11,6 +11,11 @@ export class Tab2Page {
 
   constructor(public photoService: PhotoService) { }
 
+  // 最初にタブが開かれたときに、全ての写真を読み込み
+  async ngOnInit() {
+    await this.photoService.loadSaved();
+  }
+
   // servicesで定義したメソッドを呼び出し
   addPhotoToGallery() {
     this.photoService.addNewToGallery();
