@@ -14,6 +14,10 @@ class TodoApp(ft.UserControl):
     buildは実装必須.戻り値はControl(TextやColumnなどUIの部品的なもの)のリストか単一のオブジェクト
     """
 
+    STATUS_ALL = "すべて"
+    STATUS_ACTIVE = "未完"
+    STATUS_COMPLETED = "完了"
+
     def build(self):
         # タスクリスト
         self.tasks = ft.Column()
@@ -26,23 +30,44 @@ class TodoApp(ft.UserControl):
             on_click=self.add_clicked,
         )
 
-        # ReactでいうJSXを返すようなもの
+        # フィルタータブ
+        self.filter = ft.Tabs(
+            selected_index=0,
+            on_change=self.tabs_changed,
+            tabs=[
+                ft.Tab(text=TodoApp.STATUS_ALL),
+                ft.Tab(text=TodoApp.STATUS_ACTIVE),
+                ft.Tab(text=TodoApp.STATUS_COMPLETED),
+            ],
+        )
+
+        # ReactでJSXを返すようなもの
         return ft.Column(
             width=600,
             controls=[
+                # タイトル
+                ft.Row([ft.Text(value="ToDo", style="headlineMedium")], alignment=ft.MainAxisAlignment.CENTER),
+                # 入力欄と追加ボタン
                 ft.Row(
                     controls=[
                         self.new_task_field,
                         self.add_button,
                     ]
                 ),
-                self.tasks,
+                # タスク一覧とフィルタータブ
+                ft.Column(
+                    spacing=25,
+                    controls=[
+                        self.filter,
+                        self.tasks,
+                    ],
+                ),
             ],
         )
 
     def add_clicked(self, e):
         """タスク一覧に新しいタスクを追加する"""
-        task = Task(self.new_task_field.value, self.task_delete)
+        task = Task(self.new_task_field.value, self.task_delete, self.task_status_change)
         self.tasks.controls.append(task)
         self.new_task_field.value = ""
         self.update()
@@ -54,18 +79,44 @@ class TodoApp(ft.UserControl):
         self.tasks.controls.remove(task)
         self.update()
 
+    def task_status_change(self, task):
+        """子コンポーネントに渡す ステータス変更時に画面更新"""
+        self.update()
+
+    def tabs_changed(self, e):
+        """フィルタータブ変更時のイベント"""
+        self.update()
+
+    def update(self):
+        status = self.filter.tabs[self.filter.selected_index].text
+        for task in self.tasks.controls:
+            task.visible = (
+                # すべて表示
+                status == TodoApp.STATUS_ALL
+                # 未完のみ表示
+                or (status == TodoApp.STATUS_ACTIVE and task.completed == False)
+                # 完了のみ表示
+                or (status == TodoApp.STATUS_COMPLETED and task.completed)
+            )
+
+        # 親の処理
+        super().update()
+
 
 class Task(ft.UserControl):
     """１つのタスク"""
 
-    def __init__(self, task_name, task_delete):
+    def __init__(self, task_name, task_delete, task_status_change):
         super().__init__()
+
+        self.completed = False
         self.task_name = task_name
         # 親から受けとった自分自身削除用の関数
         self.task_delete = task_delete
+        self.task_status_change = task_status_change
 
     def build(self):
-        self.display_task = ft.Checkbox(value=False, label=self.task_name)
+        self.display_task = ft.Checkbox(value=False, label=self.task_name, on_change=self.status_changed)
         self.edit_name = ft.TextField(expand=1)
 
         # 通常ビュー（編集中は非表示）
@@ -144,6 +195,11 @@ class Task(ft.UserControl):
         親から受け取った関数を実行することで、親のタスク一覧から自分自身を消す
         """
         self.task_delete(self)
+
+    def status_changed(self, e):
+        """完了状態変更"""
+        self.completed = self.display_task.value
+        self.task_status_change(self)
 
 
 def main(page: ft.Page):
