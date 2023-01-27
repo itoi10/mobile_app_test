@@ -41,6 +41,18 @@ class TodoApp(ft.UserControl):
             ],
         )
 
+        # 残りタスク数テキスト
+        self.tasks_left = ft.Text("残り 0 件")
+
+        left_task_view = ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[
+                self.tasks_left,
+                ft.OutlinedButton(text="完了を削除", on_click=self.clear_clicked),
+            ],
+        )
+
         # ReactでJSXを返すようなもの
         return ft.Column(
             width=600,
@@ -60,6 +72,7 @@ class TodoApp(ft.UserControl):
                     controls=[
                         self.filter,
                         self.tasks,
+                        left_task_view,
                     ],
                 ),
             ],
@@ -87,8 +100,16 @@ class TodoApp(ft.UserControl):
         """フィルタータブ変更時のイベント"""
         self.update()
 
+    def clear_clicked(self, e):
+        """完了済みタスク削除ボタンのイベント"""
+        for task in self.tasks.controls:
+            if task.completed:
+                self.task_delete(task)
+
     def update(self):
         status = self.filter.tabs[self.filter.selected_index].text
+        count = 0
+
         for task in self.tasks.controls:
             task.visible = (
                 # すべて表示
@@ -98,6 +119,10 @@ class TodoApp(ft.UserControl):
                 # 完了のみ表示
                 or (status == TodoApp.STATUS_COMPLETED and task.completed)
             )
+            if not task.completed:
+                count += 1
+
+        self.tasks_left.value = f"未完 {count} 件"
 
         # 親の処理
         super().update()
@@ -157,7 +182,7 @@ class Task(ft.UserControl):
                 ft.IconButton(
                     icon=ft.icons.DONE_OUTLINE_OUTLINED,
                     icon_color=ft.colors.GREEN,
-                    tooltip="Update To-Do",
+                    tooltip="更新",
                     on_click=self.save_clicked,
                 ),
             ],
@@ -203,7 +228,7 @@ class Task(ft.UserControl):
 
 
 def main(page: ft.Page):
-    page.title = "Flet ToDoアプリ"
+    page.title = "ToDoアプリ"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.update()
 
