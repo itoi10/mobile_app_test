@@ -42,14 +42,14 @@ class TodoApp(ft.UserControl):
         )
 
         # 残りタスク数テキスト
-        self.tasks_left = ft.Text("残り 0 件")
+        self.tasks_left = ft.Text("未完タスク 0 件")
 
         left_task_view = ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
                 self.tasks_left,
-                ft.OutlinedButton(text="完了を削除", on_click=self.clear_clicked),
+                ft.OutlinedButton(text="完了したタスクを削除", on_click=self.clear_clicked),
             ],
         )
 
@@ -122,7 +122,7 @@ class TodoApp(ft.UserControl):
             if not task.completed:
                 count += 1
 
-        self.tasks_left.value = f"未完 {count} 件"
+        self.tasks_left.value = f"未完タスク {count} 件"
 
         # 親の処理
         super().update()
