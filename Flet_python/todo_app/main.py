@@ -22,7 +22,7 @@ class TodoApp(ft.UserControl):
         # タスクリスト
         self.tasks = ft.Column()
         # 入力フィールド
-        self.new_task_field = ft.TextField(hint_text="なにを終わらせようかな？", expand=True)
+        self.new_task_field = ft.TextField(hint_text="タスク名を入力...", expand=True)
 
         # 追加ボタン
         self.add_button = ft.FloatingActionButton(
@@ -58,7 +58,7 @@ class TodoApp(ft.UserControl):
             width=600,
             controls=[
                 # タイトル
-                ft.Row([ft.Text(value="ToDo", style="headlineMedium")], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row([ft.Text(value="ToDoリスト", style="headlineMedium")], alignment=ft.MainAxisAlignment.CENTER),
                 # 入力欄と追加ボタン
                 ft.Row(
                     controls=[
@@ -102,7 +102,7 @@ class TodoApp(ft.UserControl):
 
     def clear_clicked(self, e):
         """完了済みタスク削除ボタンのイベント"""
-        for task in self.tasks.controls:
+        for task in self.tasks.controls[:]:
             if task.completed:
                 self.task_delete(task)
 
