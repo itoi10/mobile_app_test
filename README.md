@@ -5,7 +5,11 @@ Pythonでマルチプラットホームを作れるフレームワーク
 
 https://itoi10-flet-todo.fly.dev/
 
+# Flutter
+新規プロジェクトを作って起動まではできた
+
 ## ionic
+AngularベースのJavaScriptフレームワーク
 
 カメラテスト
 
