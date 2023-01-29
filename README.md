@@ -1,3 +1,5 @@
+マルチプラットホームのフレームワークを触ってみる
+
 ## Flet
 Pythonでマルチプラットホームを作れるフレームワーク
 
@@ -5,7 +7,7 @@ Pythonでマルチプラットホームを作れるフレームワーク
 
 https://itoi10-flet-todo.fly.dev/
 
-# Flutter
+## Flutter
 新規プロジェクトを作って起動まではできた
 
 ## ionic
